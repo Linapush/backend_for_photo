@@ -1,0 +1,11 @@
+.idea
+*.env
+/venv/
+*__pycache__
+.pytest_cache
+/.coverage
+.venv
+a_notes
+notes
+tell_seek.txt
+text.txt
