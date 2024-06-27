@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     DB_URL: str
 
     DB_HOST: str = 'web_db_dev'
-    DB_PORT: int = 5432
+    DB_PORT: int = 5433
     DB_USERNAME: str = 'postgres'
     DB_PASSWORD: str = 'postgres'
     DB_NAME: str = 'main_db'

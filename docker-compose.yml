@@ -8,7 +8,7 @@ services:
       dockerfile: docker/Dockerfile
       context: .
     ports:
-      - "8000:8000"
+      - "8002:8000"
     command: scripts/web_dev/startup.sh -m -l
     restart: on-failure
     env_file:
@@ -18,8 +18,6 @@ services:
     depends_on:
       web_db_dev:
         condition: service_healthy
-#      kafka:
-#        condition: service_healthy
     networks:
       - sirius_network
 
@@ -44,7 +42,7 @@ services:
       - POSTGRES_HOST=web_db_dev 
     restart: on-failure
     ports:
-      - "5432:5432"
+      - "5433:5432"
     command: [ "postgres", "-c", "log_statement=all", "-c", "log_destination=stderr" ]
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "main_db" ]
@@ -59,56 +57,9 @@ services:
     container_name: redis_dev
     image: redis:6.2.4
     ports:
-      - "6379:6379"
+      - "6378:6379"
     networks:
       - sirius_network
-
-#  kafka:
-#    image: docker.redpanda.com/vectorized/redpanda:v22.2.2
-#    command:
-#      - redpanda start
-#      - --smp 1
-#      - --overprovisioned
-#      - --node-id 0
-#      - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
-#      - --advertise-kafka-addr PLAINTEXT://kafka:29092,OUTSIDE://localhost:9092
-#      - --pandaproxy-addr 0.0.0.0:8082
-#      - --advertise-pandaproxy-addr localhost:8082
-#    healthcheck:
-#      test: [ "CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1" ]
-#      interval: 15s
-#      timeout: 3s
-#      retries: 5
-#      start_period: 5s
-#    ports:
-#      - "29092:29092"
-#    networks:
-#      - sirius_network
-
-#  console:
-#    image: docker.redpanda.com/vectorized/console:latest
-#    entrypoint: /bin/sh
-#    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
-#    environment:
-#      CONFIG_FILEPATH: /tmp/config.yml
-#      CONSOLE_CONFIG_FILE: |
-#        kafka:
-#          brokers: ["kafka:29092"]
-#          schemaRegistry:
-#            enabled: true
-#            urls: ["http://kafka:8081"]
-#          messagePack:
-#            enabled: true
-#        redpanda:
-#          adminApi:
-#            enabled: true
-#            urls: ["http://kafka:9644"]
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - sirius_network
-#    depends_on:
-#      - kafka
 
   minio:
     image: minio/minio
@@ -122,7 +73,7 @@ services:
     networks:
       - sirius_network
 
-  prometheus:
+  prometheus_dev:
     image: prom/prometheus
     container_name: prometheus
     command:
@@ -138,7 +89,7 @@ services:
     networks:
       - sirius_network
 
-  grafana:
+  grafana_dev:
     image: grafana/grafana
     container_name: grafana
     ports:
