@@ -6,6 +6,8 @@ ENV PYTHONPATH=/code
 
 WORKDIR /code
 
+RUN pip install pyyaml
+
 RUN /usr/local/bin/python -m pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir poetry==1.3.2
 
