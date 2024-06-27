@@ -132,6 +132,7 @@ async def get_filtered_files_endpoint(
                 continue
 
             file_url = minio_client.presigned_get_object(bucket_name, file_path, expires=3600)
+            file_url = file_data["file_url"]
             file_info = minio_client.stat_object(bucket_name, file_path)
             file_data = {
                 "file_name": file_path.split('/')[-1],

@@ -62,7 +62,7 @@ services:
       - sirius_network
 
   minio:
-    image: minio/minio
+    image: minio/minio:RELEASE.2023-11-01T01-57-10Z-cpuv1
     command: server --console-address ":9001" /data/
     environment:
       MINIO_ROOT_USER: minioadmin
