@@ -75,7 +75,7 @@ services:
 
   prometheus_dev:
     image: prom/prometheus
-    container_name: prometheus
+    container_name: prometheus_dev
     command:
       - "--config.file=/etc/prometheus/prometheus_config.yml"
     ports:
@@ -91,7 +91,7 @@ services:
 
   grafana_dev:
     image: grafana/grafana
-    container_name: grafana
+    container_name: grafana_dev
     ports:
       - "3000:3000"
     restart: unless-stopped

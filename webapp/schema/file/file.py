@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict
-from typing import List
+from pydantic import validator
+from typing import List, Optional
+from datetime import date
 
 
 class File(BaseModel):
@@ -20,6 +22,29 @@ class FileDownload(File):
 
 
 class FileCreate(BaseModel):
-    file_name: str
-    file_type: str
-    file_size: int
+        user_id: int
+        file_name: str
+        file_path: str
+        file_type: str
+        file_size: int
+        upload_date: date
+
+        @validator('user_id')
+        def validate_user_id(cls, value):
+            if value < 0:
+                raise ValueError('User ID must be a positive integer')
+            return value
+        
+        @validator('upload_date', pre=True, always=True)
+        def set_upload_date(cls, value):
+           return value
+
+
+        @validator('file_path')
+        def validate_file_path(cls, value, values):
+            if values.get('file_type') == 'image/jpeg' and not value.endswith('.jpg'):
+                raise ValueError('JPEG files must have a .jpg extension')
+            return value
+        
+class Config:
+    arbitrary_types_allowed = True
