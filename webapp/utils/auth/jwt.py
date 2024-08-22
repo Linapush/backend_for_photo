@@ -33,20 +33,14 @@ class JwtAuth:
         }
         return jwt.encode(access_token, self.secret)
 
-    # def validate_token(self, authorization: Annotated[str, Header()]) -> JwtTokenT:
-    #     _, token = authorization.split()
-
-    def validate_token(self, credentials: HTTPAuthorizationCredentials = Security(auth_scheme)) -> JwtTokenT:
-        token = credentials.credentials
-
+    def validate_token(self, authorization: Annotated[str, Header()]) -> JwtTokenT:
         try:
-            return cast(JwtTokenT, jwt.decode(token, self.secret))
+            return cast(JwtTokenT, jwt.decode(authorization, self.secret))
         except JWTError:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     def get_current_user(self, credentials: HTTPAuthorizationCredentials = Security(auth_scheme)) -> JwtTokenT:
-        # return self.validate_token(credentials.credentials)
-        return self.validate_token(credentials)
+        return self.validate_token(credentials.credentials)
 
 
 jwt_auth = JwtAuth(settings.JWT_SECRET_SALT)

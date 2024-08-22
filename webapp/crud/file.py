@@ -73,44 +73,49 @@ async def create_file(
 
 
 # # ф-ция для скачивание файла
+# async def download_file_by_user_id_and_file_id(
+#         session: AsyncSession, user_id: int, file_id: int) -> FileDownload | None:
+#     result = await session.execute(select(SQLAFile).where(SQLAFile.user_id == user_id, SQLAFile.id == file_id))
+#     file = result.scalars().first()
+#     return FileDownload.model_validate(file) if file else None
+
 async def download_file_by_user_id_and_file_id(
-        session: AsyncSession, user_id: int, file_id: int) -> FileDownload | None:
+    session: AsyncSession, user_id: int, file_id: int
+) -> FileDownload | None:
     result = await session.execute(select(SQLAFile).where(SQLAFile.user_id == user_id, SQLAFile.id == file_id))
     file = result.scalars().first()
     return FileDownload.model_validate(file) if file else None
 
 
-async def download_file_by_user_id_and_file_path(
-        user_id: int, file_path: str
-) -> Dict | None:
-    bucket_name = f'user-{user_id}'
+# async def download_file_by_user_id_and_file_path(
+#         user_id: int, file_path: str
+# ) -> Dict | None:
+#     bucket_name = f'user-{user_id}'
 
-    try:
-        file_info = minio_client.stat_object(bucket_name, file_path)
-        file_data = {
-            'file_name': file_path.split('/')[-1],
-            'file_type': file_info.content_type,
-            'file_size': file_info.size,
-            'file_path': file_path,
-            'user_id': user_id,
-        }
-        return file_data
-    except Exception as e:
-        logger.error(f"Error getting file details from MinIO: {e}")
-        return None
+#     try:
+#         file_info = minio_client.stat_object(bucket_name, file_path)
+#         file_data = {
+#             'file_name': file_path.split('/')[-1],
+#             'file_type': file_info.content_type,
+#             'file_size': file_info.size,
+#             'file_path': file_path,
+#             'user_id': user_id,
+#         }
+#         return file_data
+#     except Exception as e:
+#         logger.error(f"Error getting file details from MinIO: {e}")
+#         return None
 
-
-from sqlalchemy import Date, extract
 
 async def get_filtered_files(
     session: AsyncSession,
     user_id: int,
     year: Optional[int] = None,
-    month: Optional[str] = None, 
-    day: Optional[str] = None,
+    month: Optional[int] = None, 
+    day: Optional[int] = None,
     file_id: Optional[int] = None,
     file_name: Optional[str] = None
-) -> List[File] | None:
+) -> List[SQLAFile] | None:
     query = select(SQLAFile).where(SQLAFile.user_id == user_id)
 
     if year is not None:
@@ -136,9 +141,12 @@ async def get_filtered_files(
                 detail="Некорректный формат дня. Он должен быть целым числом."
             )
 
-    # Здесь используем Date для сравнения с upload_date
     if year is not None and month is not None and day is not None:
-        query = query.where(Date(SQLAFile.upload_date) == Date(year, month, day)) 
+        query = query.where(
+            extract('year', SQLAFile.upload_date) == year,
+            extract('month', SQLAFile.upload_date) == month,
+            extract('day', SQLAFile.upload_date) == day
+        )
 
     if file_id is not None:
         query = query.where(SQLAFile.id == file_id)
@@ -160,7 +168,8 @@ async def get_filtered_files(
             detail="Файлы из базы не найдены для указанных параметров."
         )
 
-    return files 
+    return files
+
 
 
 # # фильтр по дате
