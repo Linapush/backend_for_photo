@@ -2,13 +2,13 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Annotated, cast
-from fastapi import Depends
+from typing_extensions import TypedDict
 
+from fastapi import Depends
 from fastapi import Header, HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from starlette import status
-from typing_extensions import TypedDict
 
 from conf.config import settings
 

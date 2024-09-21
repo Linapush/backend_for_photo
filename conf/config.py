@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     DB_NAME: str = 'main_db'
 
     # JWT, Kafka
-    JWT_SECRET_SALT: str # секретный ключ, используемый для подписи JSON Web Tokens (JWT), обеспечивая безопасность веб-приложений и API
-    KAFKA_BOOTSTRAP_SERVERS: List[str] # распределенная платформа для обработки данных в реальном времени.
+    JWT_SECRET_SALT: str  # секретный ключ, используемый для подписи JSON Web Tokens (JWT), обеспечивая безопасность веб-приложений и API
+    KAFKA_BOOTSTRAP_SERVERS: List[str]  # распределенная платформа для обработки данных в реальном времени.
     KAFKA_TOPIC: str
 
     # Redis - система управления базами данных, используемая как кэш, база данных или очередь сообщений
@@ -26,9 +26,9 @@ class Settings(BaseSettings):
     REDIS_SIRIUS_CACHE_PREFIX: str = 'sirius'
 
     # Rabbit, Minio
-    RABBIT_SIRIUS_USER_PREFIX: str = 'user' # идентификации различных экземпляров RabbitMQ
-    TEMP_FILES_DIR: str = '/temp' # директория, в которой временные файлы будут сохраняться или использоваться при работе программы
-    MINIO_ACCESS_KEY: str # сервер для облачного хранения данных, совместимый с Amazon S3. Настройки MinIO могут включать параметры подключения к серверу, доступ и другие параметры
+    RABBIT_SIRIUS_USER_PREFIX: str = 'user'  # идентификации различных экземпляров RabbitMQ
+    TEMP_FILES_DIR: str = '/temp'  # директория, в которой временные файлы будут сохраняться или использоваться при работе программы
+    MINIO_ACCESS_KEY: str  # сервер для облачного хранения данных, совместимый с Amazon S3. Настройки MinIO могут включать параметры подключения к серверу, доступ и другие параметры
     MINIO_SECRET_KEY: str
     MINIO_HOST: str
     MINIO_PORT: str

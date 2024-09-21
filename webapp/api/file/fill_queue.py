@@ -14,9 +14,9 @@ from webapp.schema.file.file import FillQueue
 
 @file_router.post('/fill_queue')
 async def fill_queue(
-    body: FillQueue = Depends(),
-    session: AsyncSession = Depends(get_session),
-    # access_token: JwtTokenT = Depends(jwt_auth.validate_token),
+        body: FillQueue = Depends(),
+        session: AsyncSession = Depends(get_session),
+        # access_token: JwtTokenT = Depends(jwt_auth.validate_token),
 ) -> ORJSONResponse:
     exchange_users = get_exchange_users()
 
@@ -30,7 +30,6 @@ async def fill_queue(
             ),
             ''
         )
-
 
     return ORJSONResponse(
         {

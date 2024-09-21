@@ -1,16 +1,14 @@
 import asyncio
-from starlette import status
 from datetime import date
-from typing import List, Optional, Dict
-from webapp.logger import logger
+from typing import List, Optional
 
 from fastapi import UploadFile, HTTPException
+from sqlalchemy import extract, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func, extract, select
-
+from starlette import status
 
 from webapp.db.minio import minio_client
-from webapp.crud.user import get_user
+from webapp.logger import logger
 from webapp.models.sirius.file import File as SQLAFile
 from webapp.schema.file.file import File, FileCreate, FileDownload
 
@@ -46,10 +44,10 @@ async def upload_file_to_minio(file: UploadFile, user_id: int) -> str:
 
 # # создание объекта файла в базе данных
 async def create_file(
-    session: AsyncSession,
-    file_data: FileCreate,
-    # file: UploadFile,
-    # user_id: int,
+        session: AsyncSession,
+        file_data: FileCreate,
+        # file: UploadFile,
+        # user_id: int,
 ) -> File:
     logger.debug("Creating a new file")
     # minio_path = await upload_file_to_minio(file=file, user_id=user_id)
@@ -80,7 +78,7 @@ async def create_file(
 #     return FileDownload.model_validate(file) if file else None
 
 async def download_file_by_user_id_and_file_id(
-    session: AsyncSession, user_id: int, file_id: int
+        session: AsyncSession, user_id: int, file_id: int
 ) -> FileDownload | None:
     result = await session.execute(select(SQLAFile).where(SQLAFile.user_id == user_id, SQLAFile.id == file_id))
     file = result.scalars().first()
@@ -108,13 +106,13 @@ async def download_file_by_user_id_and_file_id(
 
 
 async def get_filtered_files(
-    session: AsyncSession,
-    user_id: int,
-    year: Optional[int] = None,
-    month: Optional[int] = None, 
-    day: Optional[int] = None,
-    file_id: Optional[int] = None,
-    file_name: Optional[str] = None
+        session: AsyncSession,
+        user_id: int,
+        year: Optional[int] = None,
+        month: Optional[int] = None,
+        day: Optional[int] = None,
+        file_id: Optional[int] = None,
+        file_name: Optional[str] = None
 ) -> List[SQLAFile] | None:
     query = select(SQLAFile).where(SQLAFile.user_id == user_id)
 
@@ -158,7 +156,7 @@ async def get_filtered_files(
         files = result.scalars().all()
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Ошибка при выполнении запроса к базе данных: {e}"
         )
 
@@ -169,8 +167,6 @@ async def get_filtered_files(
         )
 
     return files
-
-
 
 # # фильтр по дате
 # async def get_filtered_files(
@@ -239,4 +235,3 @@ async def get_filtered_files(
 #     )
 
 #     return file_path
-

@@ -1,10 +1,10 @@
 [
-    {
-        "image_url": "/https://min.io/images/image1.jpg",
-        "description": "Описание изображения 1"
-    },
-    {
-        "image_url": "https://min.io/images/image2.jpg",
-        "description": "Описание изображения 2"
-    }
+  {
+    "image_url": "/https://min.io/images/image1.jpg",
+    "description": "Описание изображения 1"
+  },
+  {
+    "image_url": "https://min.io/images/image2.jpg",
+    "description": "Описание изображения 2"
+  }
 ]

@@ -12,10 +12,10 @@ from webapp.utils.auth.jwt import JwtTokenT, jwt_auth
 
 @filter_router.get('/', response_model=List[int], tags=['filter'])
 async def get_filtered_data_endpoint(
-    year: Optional[int] = None,
-    month: Optional[int] = None,
-    session: AsyncSession = Depends(get_session),
-    access_token: JwtTokenT = Depends(jwt_auth.get_current_user),
+        year: Optional[int] = None,
+        month: Optional[int] = None,
+        session: AsyncSession = Depends(get_session),
+        access_token: JwtTokenT = Depends(jwt_auth.get_current_user),
 ):
     try:
         filtered = await get_filtered_data(session=session, user_id=access_token['user_id'], year=year, month=month)

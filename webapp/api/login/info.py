@@ -15,7 +15,7 @@ from webapp.utils.auth.jwt import JwtTokenT, jwt_auth
     tags=['auth'],
 )
 async def info(
-    access_token: JwtTokenT = Depends(jwt_auth.validate_token),
+        access_token: JwtTokenT = Depends(jwt_auth.validate_token),
 ) -> ORJSONResponse:
     return ORJSONResponse(access_token)
 

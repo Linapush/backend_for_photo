@@ -30,8 +30,8 @@ services:
       - RABBITMQ_DEFAULT_PASS=rmpassword
     networks:
       - sirius_network
-      
-# сервис с образом PostgreSQL для базы данных
+
+  # сервис с образом PostgreSQL для базы данных
   web_db_dev:
     container_name: web_db_dev
     image: library/postgres:13.2
@@ -39,7 +39,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=main_db
-      - POSTGRES_HOST=web_db_dev 
+      - POSTGRES_HOST=web_db_dev
     restart: on-failure
     ports:
       - "5433:5432"

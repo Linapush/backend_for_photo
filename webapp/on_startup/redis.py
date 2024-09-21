@@ -14,4 +14,4 @@ async def start_redis() -> None:
         connection_pool=pool,
     )
 
-# вспомнить про start reddis, pooling 
+# вспомнить про start reddis, pooling

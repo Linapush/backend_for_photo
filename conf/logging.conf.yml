@@ -9,7 +9,7 @@ handlers:
     formatter: console
 root:
   level: INFO
-  handlers: [console]
+  handlers: [ console ]
 loggers:
   'photo_tinder_bot':
     level: INFO

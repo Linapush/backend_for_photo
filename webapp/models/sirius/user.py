@@ -9,5 +9,6 @@ class User(Base):
     __table_args__ = {'schema': DEFAULT_SCHEMA}
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)  # это автоинкрементируемый id записи в БД
-    username: Mapped[int] = mapped_column(BigInteger, unique=True)  # это user_id из телегарм (изначально в учебном проекте так было)
+    username: Mapped[int] = mapped_column(BigInteger,
+                                          unique=True)  # это user_id из телегарм (изначально в учебном проекте так было)
     code: Mapped[str] = mapped_column(String)

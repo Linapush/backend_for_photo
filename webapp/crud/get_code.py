@@ -1,6 +1,7 @@
 from sqlalchemy import select
-from webapp.models.sirius.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from webapp.models.sirius.user import User
 from webapp.schema.login.user import UserIdTG
 
 

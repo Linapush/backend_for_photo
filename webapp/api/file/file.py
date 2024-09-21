@@ -1,14 +1,14 @@
-from starlette import status
-from urllib.parse import quote
 from datetime import date
+from io import BytesIO
 from typing import List, Optional
+from urllib.parse import quote
+
 from fastapi import Depends, File, HTTPException, UploadFile, Query
-from fastapi.responses import StreamingResponse, ORJSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import StreamingResponse, ORJSONResponse
 from minio.error import S3Error
 from sqlalchemy.ext.asyncio import AsyncSession
-from webapp.logger import logger
-from io import BytesIO
+from starlette import status
 
 from webapp.api.file.router import file_router
 from webapp.crud.file import create_file
@@ -16,6 +16,7 @@ from webapp.crud.file import download_file_by_user_id_and_file_id, get_filtered_
 from webapp.crud.file import upload_file_to_minio
 from webapp.db.minio import minio_client
 from webapp.db.postgres import get_session
+from webapp.logger import logger
 from webapp.schema.file.file import File as FileSchema, FileCreate
 from webapp.utils.auth.jwt import JwtTokenT, jwt_auth
 
@@ -34,8 +35,8 @@ async def upload_file(
         logger.info(f"Received a file upload request{file, session, access_token}")
         if not access_token:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Не авторизованы")
-        
-        file_content = await file.read() 
+
+        file_content = await file.read()
         file_path = await upload_file_to_minio(file=file, user_id=access_token['user_id'])
 
         file_data = {
@@ -46,7 +47,7 @@ async def upload_file(
             # 'file_size': len(await file.read()),
             'file_size': len(file_content),
             # 'upload_date': date,
-            'upload_date': date.today(), 
+            'upload_date': date.today(),
         }
         # file.file.seek(0)
         # new_file = await create_file(session, FileCreate(**file_data), file, access_token['user_id'])
@@ -60,43 +61,43 @@ async def upload_file(
         ))
 
         logger.info(f'Создан объект в памяти {new_file}')
-        
+
         return ORJSONResponse(content=jsonable_encoder(file_data), status_code=status.HTTP_201_CREATED)
     except S3Error as e:
         logger.error(f"S3Error occurred: {e.message}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Ошибка сервера при работе с хранилищем")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Ошибка сервера при работе с хранилищем")
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Некорректный запрос.")
 
 
-
 @file_router.get('/file/', response_model=List[FileSchema], tags=['file'])
 async def get_filtered_files_endpoint(
-    year: Optional[int] = Query(None, description="Year"),
-    month: Optional[int] = Query(None, description="Month"),
-    day: Optional[int] = Query(None, description="Day"),
-    file_id: Optional[int] = Query(None, description="File ID"),
-    file_name: Optional[str] = Query(None, description="File Name"), 
-    session: AsyncSession = Depends(get_session),
-    access_token: JwtTokenT = Depends(jwt_auth.get_current_user),
+        year: Optional[int] = Query(None, description="Year"),
+        month: Optional[int] = Query(None, description="Month"),
+        day: Optional[int] = Query(None, description="Day"),
+        file_id: Optional[int] = Query(None, description="File ID"),
+        file_name: Optional[str] = Query(None, description="File Name"),
+        session: AsyncSession = Depends(get_session),
+        access_token: JwtTokenT = Depends(jwt_auth.get_current_user),
 ):
     try:
         returned_files = await get_filtered_files(
-            session=session, 
-            user_id=access_token['user_id'], 
-            year=year, 
-            month=month, 
-            day=day, 
-            file_id=file_id, 
+            session=session,
+            user_id=access_token['user_id'],
+            year=year,
+            month=month,
+            day=day,
+            file_id=file_id,
             file_name=file_name
         )
-        
+
         file_schemas = [FileSchema.from_orm(file) for file in returned_files]
         logger.info(f"Переданный файлы: {file_schemas}")
         return file_schemas
     except HTTPException as e:
-        raise e 
+        raise e
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
@@ -132,36 +133,40 @@ async def get_filtered_files_endpoint(
 
 @file_router.get('/download/{file_id}', tags=['file'])
 async def download_file_endpoint(
-    file_id: int,
-    session: AsyncSession = Depends(get_session),
-    access_token: JwtTokenT = Depends(jwt_auth.get_current_user),
+        file_id: int,
+        session: AsyncSession = Depends(get_session),
+        access_token: JwtTokenT = Depends(jwt_auth.get_current_user),
 ):
     bucket_name = f'user-{access_token["user_id"]}'
-    
+
     try:
         file_record = await download_file_by_user_id_and_file_id(
             session=session, user_id=access_token['user_id'], file_id=file_id
         )
-        
+
         if not file_record:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Файл не найден')
-        
+
+        # logger.info(f"Попытка получить объект из MinIO: bucket={bucket_name}, path={file_record.file_path}")
+
         response = minio_client.get_object(bucket_name, file_record.file_path)
-        
+        # logger.info(f"Объект успешно получен: bucket={bucket_name}, path={file_record.file_path}")
+
         data = BytesIO(response.read())
         response.close()
         response.release_conn()
-        
+
         safe_filename = quote(file_record.file_name)
         headers = {'Content-Disposition': f'attachment; filename="{safe_filename}"'}
-        
+
         return StreamingResponse(data, media_type=file_record.file_type, headers=headers)
-    
+
     except S3Error as e:
+        logger.error(f"Ошибка при доступе к MinIO: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Ошибка хранилища: {str(e)}')
     except Exception as e:
+        logger.error(f"Общая ошибка: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
 
 # @file_router.get(
 #         '/download/{file_id}', 

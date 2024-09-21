@@ -17,8 +17,8 @@ from webapp.utils.auth.jwt import jwt_auth
     tags=['auth'],
 )
 async def login(
-    body: UserLogin,
-    session: AsyncSession = Depends(get_session),
+        body: UserLogin,
+        session: AsyncSession = Depends(get_session),
 ) -> ORJSONResponse:
     user = await get_user(session, body)
 

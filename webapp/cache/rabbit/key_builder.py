@@ -8,4 +8,4 @@ def get_user_files_queue_key(user_id: int) -> str:
 # функция принимает user_id и возвращает строку, 
 # состоящую из префикса из настроек (`RABBIT_SIRIUS_USER_PREFIX`) и user_id
 
-# затем в -> queue 
+# затем в -> queue

@@ -1,6 +1,5 @@
-from minio import Minio
-
 from conf.config import settings
+from minio import Minio
 
 minio_client = Minio(
     f'{settings.MINIO_HOST}:{settings.MINIO_PORT}',

@@ -1,13 +1,12 @@
 import os
 
-# 
-
 import prometheus_client
-from aiokafka import AIOKafkaConsumer
 from prometheus_client import CONTENT_TYPE_LATEST, REGISTRY, CollectorRegistry, generate_latest
 from prometheus_client.multiprocess import MultiProcessCollector
 from starlette.requests import Request
 from starlette.responses import Response
+
+#
 
 DEFAULT_BUCKETS = (
     0.005,
@@ -30,7 +29,6 @@ DEFAULT_BUCKETS = (
     7.5,
     float('+inf'),
 )
-
 
 # TODO in middleware
 # prometheus_client.Counter(
@@ -66,6 +64,7 @@ INTEGRATION_LATENCY_BACKEND_TELEGRAM = prometheus_client.Histogram(
 )
 
 import time
+
 
 # ...
 

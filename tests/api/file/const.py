@@ -11,7 +11,6 @@ MOCKED_HEX = 'mocked_hex'
 with open(BASE_DIR / 'test_file', 'rb') as file:
     image = file.read()
 
-
 value = msgpack.packb(
     {
         'image': image,

@@ -1,17 +1,19 @@
 from webapp.cache.rabbit.key_builder import get_user_files_queue_key
 from webapp.db.rabbitmq import get_channel, get_exchange_users
 
+
 # declare_queue - объявить очередь
 
 async def declare_queue(user_id: int) -> None:
-    channel = get_channel() # получаем канал (`channel`) для взаимодействия с RabbitMQ
+    channel = get_channel()  # получаем канал (`channel`) для взаимодействия с RabbitMQ
 
     queue_key = get_user_files_queue_key(user_id)
 
-    exchange_users = get_exchange_users() # получаем обменник?
-    queue = await channel.declare_queue(queue_key, auto_delete=False, durable=True) # объявляем очередь с использованием полученного ключа
+    exchange_users = get_exchange_users()  # получаем обменник?
+    queue = await channel.declare_queue(queue_key, auto_delete=False,
+                                        durable=True)  # объявляем очередь с использованием полученного ключа
 
-    await queue.bind(exchange_users, queue_key) #привязываем созданную очередь к обменнику
+    await queue.bind(exchange_users, queue_key)  # привязываем созданную очередь к обменнику
 
 # declare_queue объявляет очередь для пользователя
 # Сначала получаем канал (`channel`) для взаимодействия с RabbitMQ.

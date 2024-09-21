@@ -13,29 +13,29 @@ FIXTURES_PATH = BASE_DIR / 'fixtures'
     ('username', 'password', 'fixtures', 'mocked_hex', 'width', 'height', 'kafka_expected_messages'),
     [
         (
-            'test',
-            'qwerty',
-            [
-                FIXTURES_PATH / 'sirius.user.json',
-            ],
-            MOCKED_HEX,
-            WIDTH,
-            HEIGHT,
-            [{'partition': 1, 'topic': 'test_resize_image', 'value': value}],
+                'test',
+                'qwerty',
+                [
+                    FIXTURES_PATH / 'sirius.user.json',
+                ],
+                MOCKED_HEX,
+                WIDTH,
+                HEIGHT,
+                [{'partition': 1, 'topic': 'test_resize_image', 'value': value}],
         ),
     ],
 )
 @pytest.mark.asyncio()
 @pytest.mark.usefixtures('_common_api_with_kafka_fixture')
 async def test_resize(
-    client: AsyncClient,
-    username: str,
-    password: str,
-    width: int,
-    height: int,
-    access_token: str,
-    kafka_received_messages: List,
-    kafka_expected_messages: List,
+        client: AsyncClient,
+        username: str,
+        password: str,
+        width: int,
+        height: int,
+        access_token: str,
+        kafka_received_messages: List,
+        kafka_expected_messages: List,
 ) -> None:
     with open(BASE_DIR / 'test_file', 'rb') as file:
         response = await client.post(

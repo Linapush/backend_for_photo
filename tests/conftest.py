@@ -4,7 +4,6 @@ import pytest
 from fastapi import FastAPI
 
 from tests.my_types import FixtureFunctionT
-
 from webapp.db.postgres import engine
 from webapp.main import create_app
 from webapp.models import meta

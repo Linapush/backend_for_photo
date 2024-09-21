@@ -13,14 +13,15 @@ from webapp.on_startup.kafka import create_producer
 from webapp.on_startup.rabbit import start_rabbit
 from webapp.on_startup.redis import start_redis
 
-from webapp.api.login.router import auth_router
 
 class Message(BaseModel):
     text: str
 
+
 @auth_router.post("/start")
 async def start_command(message: Message):
     return {"message": "Бот начал работу"}
+
 
 # устанавливающаем CORS-middleware для приложения
 def setup_middleware(app: FastAPI) -> None:
@@ -28,10 +29,10 @@ def setup_middleware(app: FastAPI) -> None:
     # See https://github.com/tiangolo/fastapi/issues/1663 .
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=['*'],    # разрешение запросов из всех доменов
-        allow_credentials=True, # разрешение на отправку куки
-        allow_methods=['*'],    # разрешение всех HTTP-методов
-        allow_headers=['*'],    # разрешение все заголовков
+        allow_origins=['*'],  # разрешение запросов из всех доменов
+        allow_credentials=True,  # разрешение на отправку куки
+        allow_methods=['*'],  # разрешение всех HTTP-методов
+        allow_headers=['*'],  # разрешение все заголовков
     )
 
 
@@ -41,6 +42,7 @@ def setup_routers(app: FastAPI) -> None:
     app.include_router(auth_router)
     app.include_router(file_router)
     app.include_router(filter_router)
+
 
 # асинхнронный контекстный менеджер lifespan
 # позволяет выполнять определенные действия при запуске и остановке приложения
@@ -53,6 +55,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
     await stop_producer()
     print('END APP')
+
 
 # объект приложения FastAPI с документацией по Swagger и заданным контекстным менеджером
 # устанавливает CORS-middleware

@@ -1,5 +1,4 @@
 from webapp.db import kafka
-from webapp.db import rabbitmq
 
 
 async def stop_producer() -> None:
