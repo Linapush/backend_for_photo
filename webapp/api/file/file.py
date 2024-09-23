@@ -1,6 +1,6 @@
 from datetime import date
 from io import BytesIO
-from typing import List, Optional
+from typing import List, Optional, Any, Dict
 from urllib.parse import quote
 
 from fastapi import Depends, File, HTTPException, UploadFile, Query
@@ -44,9 +44,7 @@ async def upload_file(
             'file_name': file.filename,
             'file_path': file_path,
             'file_type': file.content_type,
-            # 'file_size': len(await file.read()),
             'file_size': len(file_content),
-            # 'upload_date': date,
             'upload_date': date.today(),
         }
         # file.file.seek(0)
@@ -72,7 +70,8 @@ async def upload_file(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Некорректный запрос.")
 
 
-@file_router.get('/file/', response_model=List[FileSchema], tags=['file'])
+# @file_router.get('/file/', response_model=List[Dict[str, Any]], tags=['file']) 
+@file_router.get('/file/', response_model=List[FileSchema], tags=['file'])   
 async def get_filtered_files_endpoint(
         year: Optional[int] = Query(None, description="Year"),
         month: Optional[int] = Query(None, description="Month"),
@@ -84,6 +83,7 @@ async def get_filtered_files_endpoint(
 ):
     try:
         returned_files = await get_filtered_files(
+            bucket_name = f'user-{access_token["user_id"]}',
             session=session,
             user_id=access_token['user_id'],
             year=year,
@@ -92,10 +92,10 @@ async def get_filtered_files_endpoint(
             file_id=file_id,
             file_name=file_name
         )
-
         file_schemas = [FileSchema.from_orm(file) for file in returned_files]
         logger.info(f"Переданный файлы: {file_schemas}")
         return file_schemas
+        # return returned_files
     except HTTPException as e:
         raise e
     except Exception as e:

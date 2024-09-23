@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import List
 
 from pydantic import BaseModel, ConfigDict
@@ -8,6 +8,10 @@ from pydantic import validator
 class File(BaseModel):
     id: int
     file_name: str
+    file_path: str
+    file_type: str
+    file_size: int
+    upload_date: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
