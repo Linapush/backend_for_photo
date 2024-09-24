@@ -80,11 +80,9 @@ async def create_file(
 
 
 async def get_file_bytes(bucket_name: str, file_path: str) -> bytes:
-    filename = file_path
-    file_bytes = minio_client.get_object(bucket_name, filename)
-    # file_bytes = file_object.read()
-    # return file_bytes
-    return Response(content=file_bytes)
+    file_object = minio_client.get_object(bucket_name, file_path)
+    file_bytes = file_object.read()
+    return file_bytes
 
     # file_bytes = minio_client.get_object(bucket_name, filename)
     # return file_bytes.read()
@@ -152,8 +150,10 @@ async def get_filtered_files(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Файлы из базы не найдены для указанных параметров."
         )
-
+    
     return files
+
+    #return files
     # file_schemas = [FileSchema.from_orm(file) for file in files]
     # return [
     #     {

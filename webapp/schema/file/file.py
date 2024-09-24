@@ -16,6 +16,10 @@ class File(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FileSchemaWithURL(File):
+    download_url: str
+
+
 class FillQueue(BaseModel):
     user_ids: List[int]
 
